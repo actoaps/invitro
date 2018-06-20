@@ -1,0 +1,10 @@
+syntax: regex
+
+/build/
+.gradle/
+.idea/
+html/war
+.iml$
+## OS Specific
+.DS_Store
+Thumbs.db
