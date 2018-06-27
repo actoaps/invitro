@@ -5,29 +5,27 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.utils.Array;
-import com.sun.glass.ui.Pixels;
 
 import java.util.*;
 
-import static com.badlogic.gdx.graphics.GL20.*;
-import static java.lang.Math.atan2;
-import static java.lang.Math.cos;
+import static java.lang.Math.*;
 
 public class Ascii extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private float width;
 	private float height;
+    private float angle1;
+    private float angle2;
+    private float angle3;
 	private Board board;
 	private Map<Tile, Texture> tileTextures;
 	private Texture selector;
 	private TilePicker picker = new TilePicker();
     private Texture dot;
     private List<Match> matches = new LinkedList<>();
+    private Texture moire;
 
     @Override
 	public void create () {
@@ -91,6 +89,7 @@ public class Ascii extends ApplicationAdapter {
 		this.tileTextures.put(Tile.FOXTROT, new Texture("foxtrot.png"));
 		this.tileTextures.put(Tile.GOLF, new Texture("golf.png"));
 		this.tileTextures.put(Tile.HOTEL, new Texture("hotel.png"));
+		this.moire = new Texture("moire.png");
         this.selector = new Texture("selector.png");
         this.dot = new Texture("dot.png");
 	}
@@ -102,6 +101,25 @@ public class Ascii extends ApplicationAdapter {
 
 		batch.begin();
 		batch.setColor(Color.WHITE);
+
+        this.angle1 +=.01;
+        this.angle2 +=.02;
+        this.angle3 +=.03;
+        if (this.angle1 > PI *2) {
+            this.angle1 -= PI*2;
+        }
+
+        if (this.angle2 > PI *2) {
+            this.angle2 -= PI*2;
+        }
+
+        if (this.angle3 > PI *2) {
+            this.angle3 -= PI*2;
+        }
+
+        batch.draw(moire, (float) (-32 + sin(this.angle1)*32), (float) (-32 + cos(this.angle1)*32));
+        batch.draw(moire, (float) (-32 + sin(this.angle2)*32), (float) (-32 + cos(this.angle2)*32));
+        batch.draw(moire, (float) (-32 + sin(this.angle3)*32), (float) (-32 + cos(this.angle3)*32));
 
 		for (Map.Entry<Integer, Tile> entry : board) {
 			batch.draw(tileTextures.get(entry.getValue()),

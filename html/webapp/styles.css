@@ -4,5 +4,24 @@ canvas {
 }
 
 body {
-    background-color: #222222;
+    background-color: black;
+    color: white;
+}
+
+.grid-container {
+    display: grid;
+}
+
+.game {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+}
+
+.instructions {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
 }

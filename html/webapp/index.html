@@ -15,7 +15,7 @@
             var player;
 
             function init() {
-                if (player == undefined) {
+                if (player === undefined) {
                     player = new ChiptuneJsPlayer(new ChiptuneJsConfig(-1));
                 }
                 else {
@@ -40,8 +40,14 @@
 </head>
 
 <body>
-<div align="center" id="embed-html"></div>
-<button id="play">Play</button>
+<div class="grid-container">
+    <div class="game" id="embed-html"></div>
+    <div class="instructions">
+        <h2>Instructions</h2>
+        <hr/>
+        <p>You must connect identical gems with a line. This line cannot pass though other gems, and can only change direction twice. Furthermore you cannot match gems that are next to each other.</p>
+    </div>
+</div>
 
 <script type="text/javascript" src="html/html.nocache.js"></script>
 </body>
