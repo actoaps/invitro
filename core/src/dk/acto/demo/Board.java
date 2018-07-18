@@ -7,7 +7,7 @@ public class Board implements Iterable<Map.Entry<Integer, Tile>> {
     private static final Integer size = 12;
 
     public Board() {
-        this.board = new HashMap<Integer, Tile>();
+        this.board = new HashMap<>();
         Queue<Tile> tiles = genTiles();
         for (int y = 1; y < size + 1; y++) {
             for (int x = 1; x < size + 1; x++) {
@@ -34,7 +34,7 @@ public class Board implements Iterable<Map.Entry<Integer, Tile>> {
     }
 
     private Queue<Tile> genTiles() {
-        LinkedList<Tile> result = new LinkedList<Tile>();
+        LinkedList<Tile> result = new LinkedList<>();
         for (Tile tile : Tile.values()) {
             for (int i = 0; i < (size * size / 8); i++) {
                 result.add(tile);
@@ -198,7 +198,17 @@ public class Board implements Iterable<Map.Entry<Integer, Tile>> {
         if (!match.getRenderQueue().isEmpty()) {
             match.getRenderQueue().remove();
         }
+    }
 
+    public boolean isWon() {
+        for (int y = 1; y < size + 1; y++) {
+            for (int x = 1; x < size + 1; x++) {
+                if (getTile(getPosition(x,y)) != null) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private class PathSegment {

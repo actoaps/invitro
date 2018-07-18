@@ -8,7 +8,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.Math.*;
 
@@ -26,6 +29,9 @@ public class Ascii extends ApplicationAdapter {
     private Texture dot;
     private List<Match> matches = new LinkedList<>();
     private Texture moire;
+    private Long score;
+    private Long startTime;
+    private long endTime;
 
     @Override
 	public void create () {
@@ -92,6 +98,9 @@ public class Ascii extends ApplicationAdapter {
 		this.moire = new Texture("moire.png");
         this.selector = new Texture("selector.png");
         this.dot = new Texture("dot.png");
+        this.score = 0L;
+        this.startTime = System.currentTimeMillis();
+        this.endTime = 0;
 	}
 
 	@Override
@@ -100,7 +109,7 @@ public class Ascii extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.begin();
-		batch.setColor(Color.WHITE);
+		batch.setColor(Color.LIGHT_GRAY);
 
         this.angle1 +=.01;
         this.angle2 +=.02;
@@ -117,11 +126,21 @@ public class Ascii extends ApplicationAdapter {
             this.angle3 -= PI*2;
         }
 
+        if (board.isWon() && this.endTime == 0) {
+            this.endTime = System.currentTimeMillis();
+            System.out.println("Score: " + this.score);
+            System.out.println("Time: " + (this.endTime-this.startTime)/1000);
+            System.out.println("Final Score: " + (this.score - (this.endTime-this.startTime)/2000));
+
+        }
+
         batch.draw(moire, (float) (-32 + sin(this.angle1)*32), (float) (-32 + cos(this.angle1)*32));
         batch.draw(moire, (float) (-32 + sin(this.angle2)*32), (float) (-32 + cos(this.angle2)*32));
         batch.draw(moire, (float) (-32 + sin(this.angle3)*32), (float) (-32 + cos(this.angle3)*32));
 
-		for (Map.Entry<Integer, Tile> entry : board) {
+        batch.setColor(Color.WHITE);
+
+        for (Map.Entry<Integer, Tile> entry : board) {
 			batch.draw(tileTextures.get(entry.getValue()),
                     Board.getX(entry.getKey()) * 32,
                     418 - Board.getY(entry.getKey()) * 32
@@ -144,7 +163,13 @@ public class Ascii extends ApplicationAdapter {
         }
 
         if (picker.isReady()) {
-            this.matches.add(board.matches(picker.getFirst(), picker.getLast()));
+            Match temp = board.matches(picker.getFirst(), picker.getLast());
+            this.matches.add(temp);
+            if (this.matches != null) {
+                this.score = this.score + temp.getPath().size();
+                System.out.println(this.score);
+            }
+
 		    picker.reset();
         }
 
