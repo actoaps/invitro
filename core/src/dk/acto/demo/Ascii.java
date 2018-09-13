@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.HashMap;
@@ -25,6 +27,7 @@ public class Ascii extends ApplicationAdapter {
 	private Board board;
 	private Map<Tile, Texture> tileTextures;
 	private Texture selector;
+	private BitmapFont font;
 	private TilePicker picker = new TilePicker();
     private Texture dot;
     private List<Match> matches = new LinkedList<>();
@@ -32,6 +35,7 @@ public class Ascii extends ApplicationAdapter {
     private Long score;
     private Long startTime;
     private long endTime;
+    private GlyphLayout layout;
 
     @Override
 	public void create () {
@@ -82,7 +86,8 @@ public class Ascii extends ApplicationAdapter {
             }
         });
 
-        batch = new SpriteBatch();
+        this.layout = new GlyphLayout(); //dont do this every frame! Store it as member
+         this.batch = new SpriteBatch();
 		this.width = Gdx.graphics.getWidth();
 		this.height = Gdx.graphics.getHeight();
 		this.board = new Board();
@@ -95,6 +100,8 @@ public class Ascii extends ApplicationAdapter {
 		this.tileTextures.put(Tile.FOXTROT, new Texture("foxtrot.png"));
 		this.tileTextures.put(Tile.GOLF, new Texture("golf.png"));
 		this.tileTextures.put(Tile.HOTEL, new Texture("hotel.png"));
+        this.font = new BitmapFont( Gdx.files.internal("bitmap.fnt"),
+                Gdx.files.internal("bitmap.png"), false);
 		this.moire = new Texture("moire.png");
         this.selector = new Texture("selector.png");
         this.dot = new Texture("dot.png");
@@ -107,9 +114,9 @@ public class Ascii extends ApplicationAdapter {
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        batch.enableBlending();
 		batch.begin();
-		batch.setColor(Color.LIGHT_GRAY);
+
 
         this.angle1 +=.01;
         this.angle2 +=.02;
@@ -126,16 +133,18 @@ public class Ascii extends ApplicationAdapter {
             this.angle3 -= PI*2;
         }
 
+
+
         if (board.isWon() && this.endTime == 0) {
             this.endTime = System.currentTimeMillis();
-            System.out.println("Score: " + this.score);
-            System.out.println("Time: " + (this.endTime-this.startTime)/1000);
-            System.out.println("Final Score: " + (this.score - (this.endTime-this.startTime)/2000));
-
         }
 
+
+        batch.setColor(Color.RED);
         batch.draw(moire, (float) (-32 + sin(this.angle1)*32), (float) (-32 + cos(this.angle1)*32));
+        batch.setColor(Color.GREEN);
         batch.draw(moire, (float) (-32 + sin(this.angle2)*32), (float) (-32 + cos(this.angle2)*32));
+        batch.setColor(Color.BLUE);
         batch.draw(moire, (float) (-32 + sin(this.angle3)*32), (float) (-32 + cos(this.angle3)*32));
 
         batch.setColor(Color.WHITE);
@@ -143,7 +152,7 @@ public class Ascii extends ApplicationAdapter {
         for (Map.Entry<Integer, Tile> entry : board) {
 			batch.draw(tileTextures.get(entry.getValue()),
                     Board.getX(entry.getKey()) * 32,
-                    418 - Board.getY(entry.getKey()) * 32
+                    416 - Board.getY(entry.getKey()) * 32
 			);
 		}
 
@@ -151,13 +160,13 @@ public class Ascii extends ApplicationAdapter {
 		    batch.setColor(Color.GREEN);
             batch.draw(selector,
                     Board.getX(picker.getFirst()) * 32,
-                    418 - Board.getY(picker.getFirst()) * 32
+                    416 - Board.getY(picker.getFirst()) * 32
             );
 		    if (picker.getLast() != null) {
                 batch.setColor(Color.RED);
                 batch.draw(selector,
                         Board.getX(picker.getLast()) * 32,
-                        418 - Board.getY(picker.getLast()) * 32
+                        416 - Board.getY(picker.getLast()) * 32
                 );
             }
         }
@@ -167,7 +176,6 @@ public class Ascii extends ApplicationAdapter {
             this.matches.add(temp);
             if (this.matches != null) {
                 this.score = this.score + temp.getPath().size();
-                System.out.println(this.score);
             }
 
 		    picker.reset();
@@ -190,6 +198,10 @@ public class Ascii extends ApplicationAdapter {
             }
         }
 
+        font.setColor(Color.WHITE);
+        font.draw(batch, "Score " + score, 32,448);
+        String time = "Time " + (((this.endTime == 0 ? System.currentTimeMillis() : this.endTime)-this.startTime)/1000);
+        font.draw(batch, time , 32,32);
 		batch.end();
 	}
 
